@@ -1,5 +1,6 @@
-""" Find all the exact divisors
+# Find all the exact divisors
 
-- find_all_divisors.py (Python implementation)
-- find_all_divisors.xml (Fake lang)
+## Files
+- `find_all_divisors.py` - Python implementation
+- `find_all_divisors.xml` - Fake lang
 
