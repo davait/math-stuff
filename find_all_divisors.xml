@@ -1,0 +1,66 @@
+<app>
+    <!-- Example of all divisors of 100 -->
+    <integer name="given_number" initial_value="0"/>
+
+    <!-- Main function triggered from main signal -->
+    <func signal="main">
+        <!-- Defining main scope: variables assignment -->
+        <scope name="divisors_scope" signal="signal.export">
+            <assign variable="given_number" value="100"/> <!-- your given number param -->
+        </scope>
+        <!-- Calling function to find all the exact divisors of a given integer -->
+        <call func="find_all_divisors" scope="divisors_scope"/>
+        <!-- (Optional) Return specified number to the system -->
+        <return variable="given_number"/>
+    </func>
+
+    <!-- Find all the exact divisors -->
+    <func name="find_all_divisors">
+        <!-- Defining function scope: data type and casts -->
+        <scope name="self" signal="signal.release">
+            <integer name="current_number"/> <!-- number in the sequence -->
+            <float name="divisor" auto-cast="integer"/> <!-- conditional and auto casting to integer -->
+            <integer name="range_start"/> <!-- for sequence operand (start) -->
+            <expression name="range_stop"/> <!-- for sequence operand (stop) -->
+        </scope>
+
+        <!-- Assigning initial values of the variables -->
+        <assign variable="range_start" initial_value="1"/>
+        <assign variable="range_stop"> <!-- an expression means: SQUARE-ROOT(given_number)+1 -->
+            <square-root variable="given_number"/>
+            <plus value="1"/>
+        </assign>
+
+        <!-- Let's check all numbers in the sequence -->
+        <sequence name="current_number" start="range_start" stop="range_stop">
+            <!-- Defining volatile scope inside of sequence -->
+            <scope name="compare_scope" signal="signal.release">
+                <assign variable="given_number" default_position="left"/>
+                <assign variable="current_number" default_position="right"/>
+            </scope>
+            <!-- Let's compare current scope's variables using MODULO math operation -->
+            <!--     Should be equals to 0 to be able to find next divisors -->
+            <compare using="signal.modulo" scope="compare_scope" equals="0">
+                <!-- Also check if divisors are equal -->
+                <compare using="signal.division" scope="compare_scope" equals="current_number">
+                    <print cache="true" type="numbers" name="all_divisors"> <!-- print into numbers-cache -->
+                        <variable name="current_number"/>
+                    </print>
+                <otherwise/> <!-- Otherwise print both: current number and divisor -->
+                    <!-- Assigning to [divisor] value from the same scope: -->
+                    <!--    divisor = given_number / current_number (auto-cast to integer) -->
+                    <assign variable="divisor" using="signal.division" scope="compare_scope" />
+                    <print cache="true" type="numbers" name="all_divisors"> <!-- print into numbers-cache -->
+                        <variable name="current_number"/>
+                        <variable name="divisor"/>
+                    </print>
+                </compare>
+            </compare>
+        </sequence>
+
+        <!-- Print all sorted data to standard output -->
+        <print>
+            <cache from="all_divisors" sorted="true"/>
+        </print>
+    </func>
+</app>
